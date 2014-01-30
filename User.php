@@ -68,10 +68,11 @@ class User extends Bootstrap {
 	public function login($data) {
 
 		// check if a session already exists
-		$session = $this->session();
+		$session = false;//$this->_checkSession();
 		if ($session['success']===1) {
 			$this->returnModel['success'] = true;
 		} else {
+
 
 			// check missing credentials
 			if(!isset($data['email'])) {
@@ -102,7 +103,7 @@ class User extends Bootstrap {
 						setcookie(COOKIE_NAME_IDENT, $user['id'], time()+COOKIE_EXPIRE, COOKIE_PATH);
 						setcookie(COOKIE_NAME_TOKEN, SECRET, time()+COOKIE_EXPIRE, COOKIE_PATH);
 
-						$returnModel['success'] = true;
+						$this->returnModel['success'] = true;
 
 
 					} else {
@@ -132,6 +133,11 @@ class User extends Bootstrap {
 	}
 
 
+
+	private function _checkSession() {
+		return $this->session();
+	}
+
 	/**
 	 * get the user information by the user's ID or email
 	 *
@@ -150,8 +156,8 @@ class User extends Bootstrap {
 			if($result->num_rows<1) {
 				$this->returnModel['error'] = "NO_USER";
 			}
-			$row = $result->fetch_row();
-			return $row[0];
+			$row = $result->fetch_assoc();
+			return $row;
 		} else {
 			return $result;
 		}
@@ -177,7 +183,7 @@ class User extends Bootstrap {
 			return false;
 		}
 
-		$row = $result->fetch_row()
+		$row = $result->fetch_row();
 		return $row[0];
 
 	}
