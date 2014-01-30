@@ -22,16 +22,16 @@ class User extends Bootstrap {
 
 		// check cookies, if cookie for user ID and secret is set, 
 		// validate the secret matches the server secret
-		if(isset($_COOKIE['on_user']) && isset($_COOKIE['secret']))	 {
+		if(isset($_COOKIE[COOKIE_NAME_IDENT]) && isset($_COOKIE[COOKIE_NAME_TOKEN]))	 {
 			
 			// return bad auth if secret doesnt match
-			if($_COOKIE['secret'] !== SECRET) {
+			if($_COOKIE[COOKIE_NAME_TOKEN] !== SECRET) {
 
 				$this->returnModel['error'] = "AUTH_FAIL";
 				
 			} else {
 
-				$this->userId = $_COOKIE['on_user'];
+				$this->userId = $_COOKIE[COOKIE_NAME_IDENT];
 				$user = null;
 
 				// if getting user info failed, return model loaded with errors
@@ -54,26 +54,65 @@ class User extends Bootstrap {
 		return $this->returnModel;
 	}
 
+	/**
+	 * Login the user, 
+	 * function checks the user credentials supplied to it 
+	 * as well as validates whether the user exists
+	 * then re-encrypts the supplied password with the salt and compares it against the stored password hash
+	 * if all this checks out it should then grab the user's data, strip it of all non-relevant information
+	 * and add the user's statistics to it before finally returning it along with a success or error indicator
+	 * 
+	 * @param  array $data an array of POST data supplied from the login form.
+	 * @return array The return model loaded with errors or data and a success indication
+	 */
 	public function login($data) {
-		// check missing credentials
-		if(!isset($data['email'])) {
-			$this->returnModel['error'] = "NO_EMAIL";
-		} else if(!isset($data['password'])) {
-			$this->returnModel['error'] = "NO_PASS";
-		} else {
-			// credentials ok, moving right along
-			// to making sure they are real
 
-			// get the user's id by the email, 
-			// if the user is not found, determine that the user
-			// does in fact not exist at all (woah)
-			if(!$this->userId = $this->_getActiveUserId($data['email'])) {
-				$this->returnModel['error'] = "BAD_USER";
+		// check if a session already exists
+		$session = $this->session();
+		if ($session['success']===1) {
+			$this->returnModel['success'] = true;
+		} else {
+
+			// check missing credentials
+			if(!isset($data['email'])) {
+				$this->returnModel['error'] = "NO_EMAIL";
+			} else if(!isset($data['password'])) {
+				$this->returnModel['error'] = "NO_PASS";
 			} else {
 
-			}
+				$user = null;
+				// credentials ok, moving right along
+				// to making sure they are real
 
+				// get the user's id by the email, 
+				// if the user is not found, determine that the user
+				// does in fact not exist at all (woah)
+				if(!$user = $this->_getUserInfo($data['email'])) {
+					$this->returnModel['error'] = "NO_USER";
+				} else {
+					// validate password
+					
+					$salt				= $user['salt'];
+					$storedPassHash		= $user['passhash'];
+					$enteredPassword	= $data['password'];
+
+					if(md5( md5($enteredPassword) . md5($salt) ) === $storedPassHash) {
+						// password ok, set cookies and return success
+						
+						setcookie(COOKIE_NAME_IDENT, $user['id'], time()+COOKIE_EXPIRE, COOKIE_PATH);
+						setcookie(COOKIE_NAME_TOKEN, SECRET, time()+COOKIE_EXPIRE, COOKIE_PATH);
+
+						$returnModel['success'] = true;
+
+
+					} else {
+						$this->returnModel['error'] = "BAD_PASS";
+					}
+				}
+
+			}
 		}
+
 
 		return $this->returnModel;
 	}
