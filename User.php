@@ -68,7 +68,7 @@ class User extends Bootstrap {
 	public function login($data) {
 
 		// check if a session already exists
-		$session = false;//$this->_checkSession();
+		$session = $this->_checkSession();
 		if ($session['success']===1) {
 			$this->returnModel['success'] = true;
 		} else {
@@ -81,21 +81,27 @@ class User extends Bootstrap {
 				$this->returnModel['error'] = "NO_PASS";
 			} else {
 
-				$user = null;
+				$user		= null;
+				
+				$db			= $this->_makeDb();
+				$email		= mysqli_real_escape_string($db, $data['email']);
+				$password	= mysqli_real_escape_string($db, $data['password']);
+				$db->close();
+				
 				// credentials ok, moving right along
 				// to making sure they are real
 
 				// get the user's id by the email, 
 				// if the user is not found, determine that the user
 				// does in fact not exist at all (woah)
-				if(!$user = $this->_getUserInfo($data['email'])) {
+				if(!$user = $this->_getUserInfo($email)) {
 					$this->returnModel['error'] = "NO_USER";
 				} else {
 					// validate password
 					
 					$salt				= $user['salt'];
 					$storedPassHash		= $user['passhash'];
-					$enteredPassword	= $data['password'];
+					$enteredPassword	= $password;
 
 					if(md5( md5($enteredPassword) . md5($salt) ) === $storedPassHash) {
 						// password ok, set cookies and return success
