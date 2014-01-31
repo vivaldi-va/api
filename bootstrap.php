@@ -57,7 +57,20 @@ class Bootstrap {
 
 	}
 
+	/**
+	 * Macro to create a db connection,
+	 * if connection fails, will load return model error message 
+	 * with connection message and return false
+	 * 
+	 * @return {connection|false} returns the database connection or false if it failed
+	 */
 	protected function _makeDb() {
-		return new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		if($db->connect_errno) {
+			$this->returnModel['error'] = $db->connect_error;
+			return false;
+		}
+
+		return $db;
 	}
 }

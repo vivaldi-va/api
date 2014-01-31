@@ -87,7 +87,7 @@ class User extends Bootstrap {
 				$email		= mysqli_real_escape_string($db, $data['email']);
 				$password	= mysqli_real_escape_string($db, $data['password']);
 				$db->close();
-				
+
 				// credentials ok, moving right along
 				// to making sure they are real
 
@@ -129,13 +129,71 @@ class User extends Bootstrap {
 	 * TODO: determine which user attributes to use as optional attributes for user account creation
 	 * 
 	 * 
-	 * @param  string $email
-	 * @param  string $name
-	 * @param  string $password
-	 * @return array or json
+	 * @param  array $data post data from registration from
+	 * @return {array}
 	 */
-	public function register($email, $name, $password) {
+	public function register($data) {
+		
+		// =|===========
+		// 	| Validation
+		// 	|
+		
+		// is email set?
+		if(!isset($data['email']) || strlen($data['email']) == 0) {
+			$this->returnModel['error'] = "NO_EMAIL";
+			return $this->returnModel;
+		} 
+		// is password set?
+		if(!isset($data['password']) || strlen($data['password']) == 0) {
+			$this->returnModel['error'] = "NO_PASS";
+			return $this->returnModel;
+		} 
+		
+		
+		// is password greater than 6 characters?
+		if(strlen($data['password']) < 6) {
+			$this->returnModel['error'] = "PASS_TOO_SHORT";
+		}
 
+		// is the name there?
+		if(!isset($data['name']) || strlen($data['name']) == 0) {
+			$this->returnModel['error'] = "NO_NAME";
+			return $this->returnModel;
+		} 		
+		
+		// prevent sql injections
+		$db			= $this->_makeDb();
+		$email		= mysqli_real_escape_string($db, $data['email']);
+		$password	= mysqli_real_escape_string($db, $data['password']);
+		$name		= mysqli_real_escape_string($db, $data['name']);
+
+		// is the email taken?
+		if($this->_getUserInfo($email)) {
+			$this->returnModel['error'] = "EMAIL_EXISTS";
+			return $this->returnModel;
+		}
+
+		// create a salt
+		$salt = uniqid();
+		
+		// hash the password with salt
+		$passHash = md5( md5($data['password']) . md5($salt) );
+
+		// REG IP
+		$ip = $_SERVER['REMOTE_ADDR'];
+		
+		// insert the data into the database
+		$sql = "INSERT INTO users (id, email, passhash, salt, created, firstname, lastname, userlevel, last_login_date, reg_ip, last_login_ip, must_validate, facebook) 
+				VALUES(null, \"$email\", \"$passHash\", \"$salt\", CURRENT_TIMESTAMP, \"$name\", \"\", 0, CURRENT_TIMESTAMP, \"$ip\", \"$ip\", 1, 0)";
+		
+		if(!$result = $this->_query($sql)) {
+			return $this->returnModel;
+		}
+
+		$this->returnModel['error']		= null;	// clear errors
+		$this->returnModel['success']	= true;
+
+		return $this->returnModel;
 	}
 
 
@@ -165,7 +223,7 @@ class User extends Bootstrap {
 			$row = $result->fetch_assoc();
 			return $row;
 		} else {
-			return $result;
+			return false;
 		}
 	}
 

@@ -17,8 +17,11 @@ Epi::init('api');
 getApi()->get('/', 'apiRoot', EpiApi::external);
 getApi()->get('/session', 'apiSession', EpiApi::external);
 getApi()->post('/login', 'apiLogin', EpiApi::external);
-getApi()->post('/post', 'apiPost', EpiApi::external);
+getApi()->post('/register', 'apiRegister', EpiApi::external);
+
 getRoute()->run();
+
+
 
 function apiRoot() {
 	return array("Congratulations, you've found the API for ostosnero");
@@ -27,6 +30,7 @@ function apiRoot() {
 
 function apiSession() {
 	$user = new User();
+
 	return $user->session();
 }
 
@@ -34,6 +38,12 @@ function apiLogin() {
 	$data = json_decode(file_get_contents('php://input'), true);
 	$user = new User();
 	return $user->login($data);
+}
+
+function apiRegister() {
+	$data = json_decode(file_get_contents('php://input'), true);
+	$user = new User();
+	return $user->register($data);
 }
 
 function apiPost() {
