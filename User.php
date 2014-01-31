@@ -1,7 +1,7 @@
 <?php
 
-include_once './lib/constants.php';
-include_once './bootstrap.php';
+require_once './lib/constants.php';
+require_once './bootstrap.php';
 
 
 class User extends Bootstrap {
