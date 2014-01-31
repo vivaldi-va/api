@@ -197,6 +197,24 @@ class User extends Bootstrap {
 	}
 
 
+	/**
+	 * Log the user out by destroying their cookies, thereby killing the session
+	 * return true in any case since it's always going to result in the user 
+	 * being logged out either here or at the front-end.
+	 * 
+	 * @return array return model
+	 */
+	public function logout() {
+		// unset cookies
+		if(isset($_COOKIE[COOKIE_NAME_IDENT]) && isset($_COOKIE[COOKIE_NAME_TOKEN])) {
+			setcookie(COOKIE_NAME_IDENT, "", time()-COOKIE_EXPIRE, COOKIE_PATH);
+			setcookie(COOKIE_NAME_TOKEN, "", time()-COOKIE_EXPIRE, COOKIE_PATH);
+		}
+		$this->returnModel['success'] = true;
+		return $this->returnModel;
+	}
+
+
 
 	private function _checkSession() {
 		return $this->session();
@@ -206,7 +224,7 @@ class User extends Bootstrap {
 	 * get the user information by the user's ID or email
 	 *
 	 * @param  {string|int} $ident
-	 * @return [type]
+	 * @return {array|boolean} array of user info or false if no user found
 	 */
 	private function _getUserInfo($ident) {
 

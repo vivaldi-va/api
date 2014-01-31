@@ -18,6 +18,7 @@ getApi()->get('/', 'apiRoot', EpiApi::external);
 getApi()->get('/session', 'apiSession', EpiApi::external);
 getApi()->post('/login', 'apiLogin', EpiApi::external);
 getApi()->post('/register', 'apiRegister', EpiApi::external);
+getApi()->get('/logout', 'apiLogout', EpiApi::external);
 
 getRoute()->run();
 
@@ -46,7 +47,7 @@ function apiRegister() {
 	return $user->register($data);
 }
 
-function apiPost() {
-	$data = json_decode(file_get_contents('php://input'), true);
-	return $data;
+function apiLogout() {
+	$user = new User();
+	return $user->logout();
 }
