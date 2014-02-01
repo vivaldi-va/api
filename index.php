@@ -2,6 +2,7 @@
 require_once './src/Epi.php';
 require_once './User.php';
 require_once './Lists.php';
+require_once './Product.php';
 Epi::init('api');
 // Epi::setSetting('exceptions', true);
 
@@ -20,7 +21,8 @@ getApi()->get('/session', 'apiSession', EpiApi::external);
 getApi()->post('/login', 'apiLogin', EpiApi::external);
 getApi()->post('/register', 'apiRegister', EpiApi::external);
 getApi()->get('/logout', 'apiLogout', EpiApi::external);
-getApi()->get('/list', 'apiGetList', EpiApi::external);
+getApi()->get('/list', 'apiGetList', EpiApi::external);					//
+getApi()->get('/product/(\d+)', 'apiGetProduct', EpiApi::external);		// list/add/:productId
 
 getRoute()->run();
 
@@ -57,4 +59,13 @@ function apiLogout() {
 function apiGetList() {
 	$list = new Lists();
 	return $list->getuserList();
+}
+
+function apiGetProduct($id) {
+	if(!$id) {
+		$id = null;
+	}
+
+	$product = new Product();
+	return $product->getProductInfo($id);
 }
