@@ -43,7 +43,11 @@ class User extends Bootstrap {
 				// by now, user should be authenticated
 				$this->returnModel['success'] 	= true;
 				$this->returnModel['message'] 	= "User session found";
-				$this->returnModel['data']		= $user;
+				$this->returnModel['data']		= array(
+					"firstname" => $user['firstname'],
+					"lastname" => $user['lastname'],
+					"email" => $user['email']
+					);
 			}
 
 			//return $this->returnModel;
@@ -216,6 +220,8 @@ class User extends Bootstrap {
 
 
 
+
+
 	private function _checkSession() {
 		return $this->session();
 	}
@@ -228,14 +234,15 @@ class User extends Bootstrap {
 	 */
 	private function _getUserInfo($ident) {
 
-		if (gettype($ident) === "integer") {
+		if (preg_match('/\d+/', $ident)) {
 			$sql = "SELECT id, email, firstname, lastname, passhash, salt FROM users WHERE id=$ident";
 		} else {
 			$sql = "SELECT id, email, firstname, lastname, passhash, salt FROM users WHERE email=\"$ident\"";
 		}
 
+		$this->returnModel['debug'] = $sql;
 		if ($result = $this->_query($sql)) {
-			if($result->num_rows<1) {
+			if($result->num_rows===0) {
 				$this->returnModel['error'] = "NO_USER";
 			}
 			$row = $result->fetch_assoc();
@@ -286,17 +293,29 @@ class User extends Bootstrap {
 	}
 
 	/**
-	 * using the User class, get the email from the checkSession function, then
-	 * query using the email contained in the resulting user info to find the database
-	 * id for the user;
+	 * Get the id of the active user from their stored cookies
+	 * Authenticate their cookies using the server-stored secret (and later a token in their user row)
+	 * and if all auth checks out, return the user id.
+	 *
+	 * Intended to be a utility class for other classes dependant on userId
 	 *
 	 * @return int: userId
 	 */
-	protected function _getActiveUserId($email) {
+	public static function getActiveUserId() {
 
+		$userId = false;
+
+		if(isset($_COOKIE[COOKIE_NAME_IDENT]) && isset($_COOKIE[COOKIE_NAME_TOKEN])) {
+			if($_COOKIE[COOKIE_NAME_TOKEN] === SECRET) {
+				$userId = $_COOKIE[COOKIE_NAME_IDENT];
+			}
+		}
+
+		return $userId;
+		/*
 		$res = $this->_query("SELECT id FROM users WHERE email = \"$email\"");
 		$row = $res->fetch_row();
-		return $row[0];
+		return $row[0];*/
 	}
 
 
