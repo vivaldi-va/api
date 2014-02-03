@@ -16,13 +16,18 @@ Epi::init('api');
 */
 
 
-getApi()->get('/', 'apiRoot', EpiApi::external);
-getApi()->get('/session', 'apiSession', EpiApi::external);
-getApi()->post('/login', 'apiLogin', EpiApi::external);
-getApi()->post('/register', 'apiRegister', EpiApi::external);
-getApi()->get('/logout', 'apiLogout', EpiApi::external);
-getApi()->get('/list', 'apiGetList', EpiApi::external);					//
-getApi()->get('/product/(\d+)', 'apiGetProduct', EpiApi::external);		// list/add/:productId
+getApi()->get('/', 					'apiRoot', 				EpiApi::external);
+getApi()->get('/user/session', 		'apiSession', 			EpiApi::external);
+getApi()->post('/user/login', 		'apiLogin', 			EpiApi::external);
+getApi()->post('/user/register', 	'apiRegister', 			EpiApi::external);
+getApi()->get('/user/logout', 		'apiLogout', 			EpiApi::external);
+getApi()->get('/user', 				'apiGetActiveUserId', 	EpiApi::internal);		// PRIVATE		
+getApi()->get('/list', 				'apiGetList', 			EpiApi::external);
+getApi()->get('/product/(\d+)', 	'apiGetProduct', 		EpiApi::external);		// product/:productId
+getApi()->get('/list/add/(\d+)', 	'apiGetProduct', 		EpiApi::external);		// list/add/:productId
+
+getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
+
 
 getRoute()->run();
 
@@ -61,6 +66,12 @@ function apiGetList() {
 	return $list->getuserList();
 }
 
+/**
+ * Get information on a product by it's id
+ * 
+ * @param  int $id product ID
+ * @return {array|json string}
+ */
 function apiGetProduct($id) {
 	if(!$id) {
 		$id = null;
@@ -69,3 +80,24 @@ function apiGetProduct($id) {
 	$product = new Product();
 	return $product->getProductInfo($id);
 }
+
+/**
+ * Add a product to the active user's list.
+ * 
+ * @param  int $id product ID
+ * @return {array|json string}
+ */
+function apiAddToList($id) {
+	 $product 	= getApi()->invoke('/product/' . $id);
+	 $list 		= new Lists();
+	 return $list->addToList($product);
+}
+
+function apiGetActiveUserId() {
+	return User::getActiveUserId();
+}
+
+function apiTestUserId() {
+	return getApi()->invoke('/user');
+}
+
