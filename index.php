@@ -24,7 +24,7 @@ getApi()->get('/user/logout', 		'apiLogout', 			EpiApi::external);
 getApi()->get('/user', 				'apiGetActiveUserId', 	EpiApi::internal);		// PRIVATE		
 getApi()->get('/list', 				'apiGetList', 			EpiApi::external);
 getApi()->get('/product/(\d+)', 	'apiGetProduct', 		EpiApi::external);		// product/:productId
-getApi()->get('/list/add/(\d+)', 	'apiGetProduct', 		EpiApi::external);		// list/add/:productId
+getApi()->get('/list/add/(\d+)', 	'apiAddToList', 		EpiApi::external);		// list/add/:productId
 
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
@@ -61,10 +61,16 @@ function apiLogout() {
 	return $user->logout();
 }
 
+/**
+ * Get a user's list
+ * 
+ * @return [type]
+ */
 function apiGetList() {
 	$list = new Lists();
-	return $list->getuserList();
+	return $list->getUserList();
 }
+
 
 /**
  * Get information on a product by it's id
@@ -88,9 +94,8 @@ function apiGetProduct($id) {
  * @return {array|json string}
  */
 function apiAddToList($id) {
-	 $product 	= getApi()->invoke('/product/' . $id);
 	 $list 		= new Lists();
-	 return $list->addToList($product);
+	 return $list->addToList($id);
 }
 
 function apiGetActiveUserId() {

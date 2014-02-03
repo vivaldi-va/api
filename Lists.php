@@ -66,75 +66,84 @@ class Lists extends Bootstrap {
 
 	/**
 	 * Add a product to a user list
+	 * - Check if the product is already in the list
+	 * - If so, increase the quantity and add a message indicating as much to the return model.
+	 * - Otherwise, insert a new product to the list products table.
+	 * 
 	 * @param [type] $product
 	 */
-	public function addToList($product) {
+	public function addToList($productId) {
 
 		$quantity = 1;
-
-		if (isset ( $_REQUEST ['listID'] ) && isset ( $_REQUEST ['productID'] )) {
-			$listID = $_REQUEST ['listID'];
-			$productID = $_REQUEST ['productID'];
-		} else {
-			$return['message'] = "no listID or productID received";
-			exit ( json_encode ( $return ) );
-		}
-
-
-		$q_checkForExistingItem = "SELECT shoppinglistproducts.id AS listItemID,
-			shoppinglistproducts.productID AS listProductID,
-			shoppinglistproducts.quantity AS quantity
-			FROM shoppinglistproducts, shoppinglists
-			WHERE shoppinglistproducts.productID = $productID AND
-			shoppinglistproducts.shoppingListID = $listID AND
-			shoppinglists.id = shoppinglistproducts.shoppingListID";
-
-		$result_checkForExistingItem = mysql_query ( $q_checkForExistingItem );
-
-		/*
-		 * IF item is already on the list Update the quantity by 1
-		 */
-		if ($result_checkForExistingItem && mysql_num_rows ( $result_checkForExistingItem ) > 0) {
-			
-			while ( $dbArray_checkForExistingItem = mysql_fetch_assoc ( $result_checkForExistingItem ) ) {
-				$newQuantity = $dbArray_checkForExistingItem ['quantity'] + $quantity;
-				$q_updateQuantity = "UPDATE shoppinglistproducts SET quantity = $newQuantity WHERE shoppinglistproducts.id = " . $dbArray_checkForExistingItem ['listItemID'];
-				
-				$result = mysql_query ( $q_updateQuantity );
-				
-				if (!$result) {
-					$return['message'] = "could not update product quantity";
-					exit(json_encode($return));
-				}
-				
-				$return['data'] = _getProductInfo($listID, $productID);
-				$return['message'] = "updated product quantity";
-				$return['success'] = 1;
-				exit(json_encode($return));
-				
+		$listId = $this->_getUserListId();
+		
+		
+		if ($listItem = $this->_listHasProduct($productId, $listId)) {
+			$quantity = intval($listItem['quantity']) + 1;
+			if(!$this->_updateQuantity($listItem['id'], $quantity)) {
+				return $this->returnModel;
 			}
-			
-			
-			
-			
+
+
 		} else {
 			
-			$q = "INSERT INTO " . TBL_SHOPPING_LIST_PRODUCTS . "(id, shoppinglistID, productID, quantity) VALUES (null, $listID, $productID, $quantity)";
+			$sql = "INSERT INTO shoppinglistproducts (id, shoppinglistID, productID, quantity) VALUES (null, $listId, $productId, $quantity)";
 			
-			$result = mysql_query ( $q );
-			if (!$result) {
-				$return['message'] = "could not add product";
-				exit(json_encode($return));
-			}
-			else 
-			{
-				
-				$return['data'] = _getProductInfo($listID, $productID);
-				$return['success'] = 1;
-				$return['message'] = "product added and new data received";
-				exit(json_encode($return));
+			if(!$this->_query($sql)) {
+				return $this->returnModel;
 			}
 		}
+
+		$this->returnModel['success'] = true;
+		return $this->returnModel;
+	}
+
+
+	/**
+	 * Public wrapper for updateQuantity, returns the model instead of booleans
+	 * 
+	 * @param  int $listItemId
+	 * @param  int $quantity
+	 * @return {array}
+	 */
+	public function updateQuantity($listItemId, $quantity) {
+		if($this->_updateQuantity($listItemId, $quantity)) {
+			$this->returnModel['success'] = true;
+			$this->returnModel['message'] = "true";
+		} 
+
+		return $returnModel;
+	}
+
+
+	private function _updateQuantity($listItemId, $quantity) {
+		if(!$this->_query("UPDATE shoppinglistproducts SET quantity=$quantity WHERE shoppinglistproducts.id = $listItemId")) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
+	/**
+	 * Using the product ID, check the user's list
+	 * If the product is in the list, return the list item info.
+	 * 
+	 * @param  [type] $productId
+	 * @return [type]
+	 */
+	private function _listHasProduct($productId, $listId) {
+		if(!$result = $this->_query("SELECT * FROM shoppinglistproducts WHERE productID = $productId AND shoppingListID = $listId")) {
+			return false;
+		} 
+
+
+		if($result->num_rows > 0) {
+			return $result->fetch_assoc();
+		} else {
+			return false;
+		}
+
 	}
 
 	private function _getUserListId() {
