@@ -109,7 +109,7 @@ class Lists extends Bootstrap {
 	public function updateQuantity($listItemId, $quantity) {
 		if($this->_updateQuantity($listItemId, $quantity)) {
 			$this->returnModel['success'] = true;
-			$this->returnModel['message'] = "true";
+			$this->returnModel['message'] = "QUANTITY_UPDATED";
 		} 
 
 		return $this->returnModel;
@@ -123,6 +123,17 @@ class Lists extends Bootstrap {
 			return true;
 		}
 	}
+
+
+
+	public function removeFromList($listItemId) {
+		if($this->_query("DELETE FROM shoppinglistproducts WHERE shoppinglistproducts.id = $listItemId")) {
+			$this->returnModel['success'] = true;
+		} 
+
+		return $this->returnModel;
+	}
+
 
 
 	/**
