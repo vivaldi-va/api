@@ -112,7 +112,7 @@ class Lists extends Bootstrap {
 			$this->returnModel['message'] = "true";
 		} 
 
-		return $returnModel;
+		return $this->returnModel;
 	}
 
 

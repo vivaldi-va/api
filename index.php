@@ -16,15 +16,16 @@ Epi::init('api');
 */
 
 
-getApi()->get('/', 					'apiRoot', 				EpiApi::external);
-getApi()->get('/user/session', 		'apiSession', 			EpiApi::external);
-getApi()->post('/user/login', 		'apiLogin', 			EpiApi::external);
-getApi()->post('/user/register', 	'apiRegister', 			EpiApi::external);
-getApi()->get('/user/logout', 		'apiLogout', 			EpiApi::external);
-getApi()->get('/user', 				'apiGetActiveUserId', 	EpiApi::internal);		// PRIVATE		
-getApi()->get('/list', 				'apiGetList', 			EpiApi::external);
-getApi()->get('/product/(\d+)', 	'apiGetProduct', 		EpiApi::external);		// product/:productId
-getApi()->get('/list/add/(\d+)', 	'apiAddToList', 		EpiApi::external);		// list/add/:productId
+getApi()->get('/', 							'apiRoot', 				EpiApi::external);
+getApi()->get('/user/session', 				'apiSession', 			EpiApi::external);
+getApi()->post('/user/login', 				'apiLogin', 			EpiApi::external);
+getApi()->post('/user/register', 			'apiRegister', 			EpiApi::external);
+getApi()->get('/user/logout', 				'apiLogout', 			EpiApi::external);
+getApi()->get('/user', 						'apiGetActiveUserId', 	EpiApi::internal);		// PRIVATE		
+getApi()->get('/list', 						'apiGetList', 			EpiApi::external);
+getApi()->get('/product/(\d+)', 			'apiGetProduct', 		EpiApi::external);		// product/:productId
+getApi()->get('/list/add/(\d+)', 			'apiAddToList', 		EpiApi::external);		// list/add/:productId
+getApi()->get('/list/quantity/(\d+)/(\d+)', 'apiQuantity', 			EpiApi::external);		// list/quantity/:listItemId/:newQuantity
 
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
@@ -96,6 +97,11 @@ function apiGetProduct($id) {
 function apiAddToList($id) {
 	 $list 		= new Lists();
 	 return $list->addToList($id);
+}
+
+function apiQuantity($listItemId, $quantity) {
+	$list = new Lists();
+	return $list->updateQuantity($listItemId, $quantity);
 }
 
 function apiGetActiveUserId() {
