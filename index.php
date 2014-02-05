@@ -30,7 +30,8 @@ getApi()->get('/list/add/(\d+)', 			'apiAddToList', 		EpiApi::external);		// lis
 getApi()->get('/list/quantity/(\d+)/(\d+)', 'apiListQuantity',		EpiApi::external);		// list/quantity/:listItemId/:newQuantity
 getApi()->get('/list/remove/(\d+)', 		'apiListRemove',		EpiApi::external);		// list/remove/:listItemId
 
-getApi()->get('/search/(.)+', 				'apiSearch',			EpiApi::external);		// search/:term
+getApi()->get('/search/(.+)', 				'apiSearch',			EpiApi::external);		// search/:term
+//getApi()->get('/search/([ -~]+)/num/(\d+)', 			'apiSearch',			EpiApi::external);		// search/:term/:num
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
 
@@ -112,6 +113,15 @@ function apiListRemove($listItemId) {
 	$list = new Lists();
 	return $list->removeFromList($listItemId);
 }
+
+
+function apiSearch($term, $limit = 50) {
+	$product = new Product();
+	//return array($term, $limit);
+	return $product->getSearchResult($term, $limit);
+}
+
+
 
 function apiGetActiveUserId() {
 	return User::getActiveUserId();
