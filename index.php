@@ -3,6 +3,7 @@ require_once './src/Epi.php';
 require_once './User.php';
 require_once './Lists.php';
 require_once './Product.php';
+require_once './Location.php';
 Epi::init('api');
 // Epi::setSetting('exceptions', true);
 
@@ -16,22 +17,24 @@ Epi::init('api');
 */
 
 
-getApi()->get('/', 							'apiRoot', 				EpiApi::external);
-getApi()->get('/user/session', 				'apiSession', 			EpiApi::external);
-getApi()->post('/user/login', 				'apiLogin', 			EpiApi::external);
-getApi()->post('/user/register', 			'apiRegister', 			EpiApi::external);
-getApi()->get('/user/logout', 				'apiLogout', 			EpiApi::external);
-getApi()->get('/user', 						'apiGetActiveUserId', 	EpiApi::internal);		// PRIVATE		
+getApi()->get('/', 									'apiRoot', 					EpiApi::external);
+getApi()->get('/user/session', 						'apiSession', 				EpiApi::external);
+getApi()->post('/user/login', 						'apiLogin', 				EpiApi::external);
+getApi()->post('/user/register', 					'apiRegister', 				EpiApi::external);
+getApi()->get('/user/logout', 						'apiLogout', 				EpiApi::external);
+getApi()->get('/user', 								'apiGetActiveUserId', 		EpiApi::internal);		// PRIVATE		
 
-getApi()->get('/product/(\d+)', 			'apiGetProduct', 		EpiApi::external);		// product/:productId
+getApi()->get('/product/(\d+)', 					'apiGetProduct', 			EpiApi::external);		// product/:productId
 
-getApi()->get('/list', 						'apiGetList', 			EpiApi::external);
-getApi()->get('/list/add/(\d+)', 			'apiAddToList', 		EpiApi::external);		// list/add/:productId
-getApi()->get('/list/quantity/(\d+)/(\d+)', 'apiListQuantity',		EpiApi::external);		// list/quantity/:listItemId/:newQuantity
-getApi()->get('/list/remove/(\d+)', 		'apiListRemove',		EpiApi::external);		// list/remove/:listItemId
+getApi()->get('/list', 								'apiGetList', 				EpiApi::external);
+getApi()->get('/list/add/(\d+)', 					'apiAddToList', 			EpiApi::external);		// list/add/:productId
+getApi()->get('/list/quantity/(\d+)/(\d+)', 		'apiListQuantity',			EpiApi::external);		// list/quantity/:listItemId/:newQuantity
+getApi()->get('/list/remove/(\d+)', 				'apiListRemove',			EpiApi::external);		// list/remove/:listItemId
 
-getApi()->get('/search/(.+)', 				'apiSearch',			EpiApi::external);		// search/:term
-//getApi()->get('/search/([ -~]+)/num/(\d+)', 			'apiSearch',			EpiApi::external);		// search/:term/:num
+getApi()->get('/search/(.+)', 						'apiSearch',				EpiApi::external);		// search/:term
+
+getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 	'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
+
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
 
@@ -121,6 +124,12 @@ function apiSearch($term, $limit = 50) {
 	return $product->getSearchResult($term, $limit);
 }
 
+
+function apiClosestLocations($latitude, $longitude, $num=20) {
+
+	$location = new Location();
+	return $location->getSurroundingStores($latitude, $longitude, $num);
+}
 
 
 function apiGetActiveUserId() {
