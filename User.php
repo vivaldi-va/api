@@ -43,10 +43,10 @@ class User extends Bootstrap {
 				// by now, user should be authenticated
 				$this->returnModel['success'] 	= true;
 				$this->returnModel['message'] 	= "User session found";
-				$this->returnModel['data']		= array(
-					"firstname" => $user['firstname'],
-					"lastname" => $user['lastname'],
-					"email" => $user['email']
+				$this->returnModel['data'] = array(
+					"name" => utf8_encode($user['firstname'] . " " . $user['lastname']),
+					"email" => $user['email'],
+					"stats" => $this->_getStats()
 					);
 			}
 
@@ -113,6 +113,12 @@ class User extends Bootstrap {
 						setcookie(COOKIE_NAME_IDENT, $user['id'], time()+COOKIE_EXPIRE, COOKIE_PATH);
 						setcookie(COOKIE_NAME_TOKEN, SECRET, time()+COOKIE_EXPIRE, COOKIE_PATH);
 
+						// TODO: figure out a good way to present the name properly
+						$this->returnModel['data'] = array(
+							"name" => utf8_encode($user['firstname'] . " " . $user['lastname']),
+							"email" => $user['email']
+							);
+						$this->returnModel['error'] = null;
 						$this->returnModel['success'] = true;
 
 
@@ -259,22 +265,22 @@ class User extends Bootstrap {
  * @param  string $email
  * @return {array|boolean} array with stats info or boolean if query fails (to indicate the function should return the set return model loaded with error things)
  */
-	private function _getStats($email) {
+	private function _getStats() {
 
+		$userId = $this->getActiveUserId();
 		$sql = "SELECT sum(shoppingListProductsHistory.saved) AS total_saved, count(DISTINCT token) AS shopping_trips, sum(shoppingListProductsHistory.price) AS total_spent
 			FROM users, shoppinglists, shoppingListProductsHistory
-			WHERE users.email = \"$email\"
-			AND shoppinglists.userID = users.id
-			AND shoppingListProductsHistory.shoppingListID = shoppinglists.id
+			WHERE users.id = $userId
+				AND shoppinglists.userID = users.id
+				AND shoppingListProductsHistory.shoppingListID = shoppinglists.id
 			GROUP BY shoppinglists.id";
 
 		if(!$result = $this->_query($sql)) {
 			return false;
 		}
 
-		$row = $result->fetch_row();
-		return $row[0];
-
+		$row = $result->fetch_assoc();
+		return $row;
 	}
 
 

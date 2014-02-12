@@ -52,11 +52,15 @@ class Lists extends Bootstrap {
 			return $this->returnModel;
 		}
 
+		$count = 0;
 		// add all the products to an array
 		while ($row = $result->fetch_assoc()) {
+			$count++;
 			$row['product_name'] = utf8_encode($row['product_name']);
 			$listArr['products'][$row['list_item_id']] = $row;
 		}
+
+		$listArr['attrs']['count'] = $count;
 
 		$this->returnModel['success']	= true;
 		$this->returnModel['data']		= $listArr;

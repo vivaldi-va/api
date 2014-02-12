@@ -41,7 +41,12 @@ class Location extends Bootstrap {
 	}
 
 	public function getSavedLocations() {
-		$userId = User::getActiveUserId();
+
+		// check user has a session
+		if(!$userId = User::getActiveUserId()) {
+			$this->returnModel['error'] = "NO_SESSION";
+			return $this->returnModel;
+		}
 
 		$locationsArr = array();
 		
@@ -73,7 +78,6 @@ class Location extends Bootstrap {
 
 		$this->returnModel['data']		= $locationsArr;
 		$this->returnModel['success']	= true;
-
 		return $this->returnModel;
 	}
 

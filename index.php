@@ -35,6 +35,8 @@ getApi()->get('/search/(.+)', 						'apiSearch',				EpiApi::external);		// searc
 
 getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 	'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
 
+getApi()->get('/location/saved',					'apiSavedLocations',		EpiApi::external);		
+
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
 
@@ -129,6 +131,11 @@ function apiClosestLocations($latitude, $longitude, $num=20) {
 
 	$location = new Location();
 	return $location->getSurroundingStores($latitude, $longitude, $num);
+}
+
+function apiSavedLocations() {
+	$location = new Location();
+	return $location->getSavedLocations();
 }
 
 
