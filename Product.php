@@ -94,7 +94,7 @@ class Product extends Bootstrap {
 
 		$userId			= User::getActiveUserId();
 		$locationClass	= new Location();
-		
+
 		$locationIdArr	= array();
 		$locationsArr	= array();		
 		$pricesArr		= array();
@@ -159,7 +159,8 @@ class Product extends Bootstrap {
 							"shop_chain"	=> $location['shop_chain'],
 							"shop_location"	=> $location['shop_location'],
 							"distance" 		=> isset($location['distance']) ? $location['distance'] : null,
-							"price"			=> null
+							"price"			=> null,
+							"user"			=> isset($location['distance']) ? false : true
 						);
 
 			foreach($pricesArr as $priceKey => $price) {
@@ -181,6 +182,12 @@ class Product extends Bootstrap {
 	}
 
 
+	/**
+	 * perform a select for a single product id, to determine if it exists in the database
+	 * 
+	 * @param  int $productId 	 product id
+	 * @return boolean           whether it exists or not
+	 */
 	private function _productExists($productId) {
 		if(!$result = $this->_query("SELECT id FROM products WHERE id=$productId")) {
 			return false;
