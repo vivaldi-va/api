@@ -5,7 +5,8 @@ require_once './Lists.php';
 require_once './Product.php';
 require_once './Location.php';
 Epi::init('api');
-// Epi::setSetting('exceptions', true);
+
+//Epi::setSetting('exceptions', true);
 
 /*
 * We create 3 normal routes (think of these are user viewable pages).
@@ -25,6 +26,7 @@ getApi()->get('/user/logout', 						'apiLogout', 				EpiApi::external);
 getApi()->get('/user', 								'apiGetActiveUserId', 		EpiApi::internal);		// PRIVATE		
 
 getApi()->get('/product/(\d+)', 					'apiGetProduct', 			EpiApi::external);		// product/:productId
+getApi()->get('/product/prices/(\d+)/(\d+\.\d+)/(\d+\.\d+)', 					'apiGetProductPrices', 			EpiApi::external);		// product/prices/:productId/:latitude/:longitude
 
 getApi()->get('/list', 								'apiGetList', 				EpiApi::external);
 getApi()->get('/list/add/(\d+)', 					'apiAddToList', 			EpiApi::external);		// list/add/:productId
@@ -97,6 +99,14 @@ function apiGetProduct($id) {
 	$product = new Product();
 	return $product->getProductInfo($id);
 }
+
+
+function apiGetProductPrices($productId, $latitude, $longitude) {
+	$product = new Product();
+	return $product->getPrices($productId, $latitude, $longitude);
+}
+
+
 
 /**
  * Add a product to the active user's list.
