@@ -181,6 +181,38 @@ class Product extends Bootstrap {
 		return $this->returnModel;
 	}
 
+	/**
+	 * Insert a new price to the prices database,
+	 * which acts to update the price to this value
+	 * 
+	 * @param  int 				$productId product row ID
+	 * @param  int 				$shopId    shop row ID
+	 * @param  {string, float} 	$price     new price, either as a string with comma decimal, or float
+	 * @return array 			           return model
+	 */
+	public function updatePrice($productId, $shopId, $price) {
+
+		// return error if no active user session
+		if(!$userId = User::getActiveUserId()) {
+			$this->returnModel['error'] = "NO_SESSION";
+			return $this->returnModel;
+		}
+
+		// format price to float
+		$price = str_replace(',', '.', $price);
+
+		// insert price to prices table
+		$sql = "INSERT INTO prices (id, created, productID, shopID, userID, price)
+		VALUES (null, CURRENT_TIMESTAMP, $productId, $shopId, $userId, $price);";
+
+		if(!$result = $this->_query($sql)) {
+			return $this->returnModel;
+		}
+
+		$this->returnModel['success'] = true;
+		return $this->returnModel;
+	}
+
 
 	/**
 	 * perform a select for a single product id, to determine if it exists in the database

@@ -18,26 +18,26 @@ Epi::init('api');
 */
 
 
-getApi()->get('/', 									'apiRoot', 					EpiApi::external);
-getApi()->get('/user/session', 						'apiSession', 				EpiApi::external);
-getApi()->post('/user/login', 						'apiLogin', 				EpiApi::external);
-getApi()->post('/user/register', 					'apiRegister', 				EpiApi::external);
-getApi()->get('/user/logout', 						'apiLogout', 				EpiApi::external);
-getApi()->get('/user', 								'apiGetActiveUserId', 		EpiApi::internal);		// PRIVATE		
+getApi()->get('/', 													'apiRoot', 					EpiApi::external);
+getApi()->get('/user/session', 										'apiSession', 				EpiApi::external);
+getApi()->post('/user/login', 										'apiLogin', 				EpiApi::external);
+getApi()->post('/user/register', 									'apiRegister', 				EpiApi::external);
+getApi()->get('/user/logout', 										'apiLogout', 				EpiApi::external);
+getApi()->get('/user', 												'apiGetActiveUserId', 		EpiApi::internal);		// PRIVATE		
 
-getApi()->get('/product/(\d+)', 					'apiGetProduct', 			EpiApi::external);		// product/:productId
-getApi()->get('/product/prices/(\d+)/(\d+\.\d+)/(\d+\.\d+)', 					'apiGetProductPrices', 			EpiApi::external);		// product/prices/:productId/:latitude/:longitude
+getApi()->get('/product/(\d+)', 									'apiGetProduct', 			EpiApi::external);		// product/:productId
+getApi()->get('/product/prices/(\d+)/(\d+\.\d+)/(\d+\.\d+)',		'apiGetProductPrices',		EpiApi::external);		// product/prices/:productId/:latitude/:longitude
+getApi()->get('/product/prices/update/(\d+)/(\d+)/(\d+([.,]\d+)?)',	'apiUpdatePrice', 			EpiApi::external);		// product/prices/update/:productId/:shopId/:price
 
-getApi()->get('/list', 								'apiGetList', 				EpiApi::external);
-getApi()->get('/list/add/(\d+)', 					'apiAddToList', 			EpiApi::external);		// list/add/:productId
-getApi()->get('/list/quantity/(\d+)/(\d+)', 		'apiListQuantity',			EpiApi::external);		// list/quantity/:listItemId/:newQuantity
-getApi()->get('/list/remove/(\d+)', 				'apiListRemove',			EpiApi::external);		// list/remove/:listItemId
+getApi()->get('/list', 												'apiGetList', 				EpiApi::external);
+getApi()->get('/list/add/(\d+)', 									'apiAddToList', 			EpiApi::external);		// list/add/:productId
+getApi()->get('/list/quantity/(\d+)/(\d+)', 						'apiListQuantity',			EpiApi::external);		// list/quantity/:listItemId/:newQuantity
+getApi()->get('/list/remove/(\d+)', 								'apiListRemove',			EpiApi::external);		// list/remove/:listItemId
 
-getApi()->get('/search/(.+)', 						'apiSearch',				EpiApi::external);		// search/:term
+getApi()->get('/search/(.+)', 										'apiSearch',				EpiApi::external);		// search/:term
 
-getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 	'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
-
-getApi()->get('/location/saved',					'apiSavedLocations',		EpiApi::external);		
+getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 					'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
+getApi()->get('/location/saved',									'apiSavedLocations',		EpiApi::external);		
 
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
@@ -104,6 +104,11 @@ function apiGetProduct($id) {
 function apiGetProductPrices($productId, $latitude, $longitude) {
 	$product = new Product();
 	return $product->getPrices($productId, $latitude, $longitude);
+}
+
+function apiUpdatePrice($productId, $shopId, $price) {
+	$product = new Product();
+	return $product->updatePrice($productId, $shopId, $price);
 }
 
 
