@@ -15,7 +15,7 @@ class Sort extends Bootstrap {
 	
 	
 	public function Sort($lat, $long) {
-		$this->coords	= array("latitude" => $lat, "longitude" => $long);
+		$this->coords	= ($lat && $long) ? array("latitude" => $lat, "longitude" => $long) : false;
 		$this->user		= User::getActiveUserId();
 		$this->list		= null;
 		$this->token	= uniqid();
