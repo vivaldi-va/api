@@ -4,6 +4,7 @@ require_once './User.php';
 require_once './Lists.php';
 require_once './Product.php';
 require_once './Location.php';
+require_once './Sort.php';
 Epi::init('api');
 
 //Epi::setSetting('exceptions', true);
@@ -33,6 +34,8 @@ getApi()->get('/list', 												'apiGetList', 				EpiApi::external);
 getApi()->get('/list/add/(\d+)', 									'apiAddToList', 			EpiApi::external);		// list/add/:productId
 getApi()->get('/list/quantity/(\d+)/(\d+)', 						'apiListQuantity',			EpiApi::external);		// list/quantity/:listItemId/:newQuantity
 getApi()->get('/list/remove/(\d+)', 								'apiListRemove',			EpiApi::external);		// list/remove/:listItemId
+getApi()->get('/list/sort/(\d+\.\d+)/(\d+\.\d+)',					'apiListSort',				EpiApi::external);		// list/sort/:latitude/:longitude
+getApi()->get('/list/sort',											'apiListSort',				EpiApi::external);		// list/sort
 
 getApi()->get('/search/(.+)', 										'apiSearch',				EpiApi::external);		// search/:term
 
@@ -132,6 +135,11 @@ function apiListQuantity($listItemId, $quantity) {
 function apiListRemove($listItemId) {
 	$list = new Lists();
 	return $list->removeFromList($listItemId);
+}
+
+function apiListSort($lat=null, $long=null) {
+	$sort = new Sort($lat, $long);
+	return $sort->getShopLists();
 }
 
 

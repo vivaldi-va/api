@@ -174,6 +174,10 @@ class Lists extends Bootstrap {
 		}
 	}
 
+	public static function getUserListId() {
+		return _getUserListId();
+	}
+
 
 
 }
