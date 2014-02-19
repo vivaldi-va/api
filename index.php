@@ -40,6 +40,7 @@ getApi()->get('/list/sort',											'apiListSort',				EpiApi::external);		// l
 getApi()->get('/search/(.+)', 										'apiSearch',				EpiApi::external);		// search/:term
 
 getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 					'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
+getApi()->get('/location/search/(.+)',								'apiSearchLocations',		EpiApi::external);		// location/search/:keywords
 getApi()->get('/location/saved',									'apiSavedLocations',		EpiApi::external);		
 getApi()->get('/location/add/(\d+)',								'apiAddLocation',			EpiApi::external);		// location/add/:shopId
 getApi()->get('/location/remove/(\d+)',								'apiRemoveLocation',		EpiApi::external);		// location/remove/:shopId
@@ -160,6 +161,11 @@ function apiClosestLocations($latitude, $longitude, $num=20) {
 
 	$location = new Location();
 	return $location->getSurroundingStores($latitude, $longitude, $num);
+}
+
+function apiSearchLocations($keywords) {
+	$location = new Location();
+	return $location->searchLocations($keywords);
 }
 
 function apiSavedLocations() {

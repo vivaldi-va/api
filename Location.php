@@ -74,6 +74,40 @@ class Location extends Bootstrap {
 	}
 
 
+	public function searchLocations($keywords) {
+		$db			= $this->_makeDb();
+		$keywords	= mysqli_real_escape_string($db, $keywords);
+		$resultArr	= array();
+
+		$sql = "SELECT  shops.id,  shops.name AS shop_location,  shops.address,  shops.city,  shops.latitude,  shops.longitude,  chains.name AS shop_chain
+				FROM shops, chains 
+				WHERE
+					" . $this->_makeKeywordsGroups($keywords) . " 
+					AND shops.chainID = chains.id";
+
+		if(!$result = $this->_query($sql)) {
+			return $this->returnModel;
+		}
+
+		if($result->num_rows<1) {
+			$this->returnModel['error'] = "NO_RESULTS";
+			return $this->returnModel;
+		}
+
+		while($row = $result->fetch_assoc()) {
+			$row['shop_location']	= utf8_encode($row['shop_location']);
+			$row['shop_chain']		= utf8_encode($row['shop_chain']);
+			$row['city']			= utf8_encode($row['city']);
+			$row['address']			= utf8_encode($row['address']);
+			array_push($resultArr, $row);
+		}
+
+		$this->returnModel['data']		= $resultArr;
+		$this->returnmodel['success']	= true;
+		return $this->returnModel;
+	}
+
+
 
 	public function getSavedLocations() {
 
@@ -208,6 +242,27 @@ class Location extends Bootstrap {
 
 		return true;
 	}
+
+
+	private function _makeKeywordsGroups($keywordString) {
+		$keywords	= explode('|', $keywordString);
+		$sqlGroups	= array();
+
+		// make sql group out of each keyword and put in array
+		foreach($keywords as $keyword) {
+			$sqlString = "(shops.name LIKE \"%$keyword%\" OR
+			shops.address LIKE \"%$keyword%\" OR
+			shops.city LIKE \"%$keyword%\" OR
+			shops.zipcode LIKE \"%$keyword%\" OR
+			chains.name LIKE \"%$keyword%\")";
+			
+			array_push($sqlGroups, $sqlString);
+			
+		}
+
+		return implode(" AND ", $sqlGroups);
+	}
+	
 
 }
 
