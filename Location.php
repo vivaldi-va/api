@@ -224,6 +224,17 @@ class Location extends Bootstrap {
 		return $this->returnModel;
 	}
 
+
+	public static function locationInfo($latitude, $longitude) {
+		$locationInfoStringURL = "http://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&sensor=false";
+
+		$locationInfo = json_decode(file_get_contents($locationInfoStringURL), true);
+		//print_r($locationInfo);
+		$address = $locationInfo['results'][0]['address_components'][1]['long_name']. ' ' . $locationInfo['results'][0]['address_components'][0]['long_name']. ', ' . $locationInfo['results'][0]['address_components'][2]['long_name'];
+
+		return $address;
+	}
+
 	/**
 	 * check whether the user has a particular location saved already
 	 * 
