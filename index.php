@@ -42,6 +42,7 @@ getApi()->get('/search/(.+)', 										'apiSearch',				EpiApi::external);		// s
 getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 					'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
 getApi()->get('/location/saved',									'apiSavedLocations',		EpiApi::external);		
 getApi()->get('/location/add/(\d+)',								'apiAddLocation',			EpiApi::external);		// location/add/:shopId
+getApi()->get('/location/remove/(\d+)',								'apiRemoveLocation',		EpiApi::external);		// location/remove/:shopId
 
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
@@ -169,6 +170,11 @@ function apiSavedLocations() {
 function apiAddLocation($shopId) {
 	$location = new Location();
 	return $location->saveLocation($shopId);
+}
+
+function apiRemoveLocation($shopId) {
+	$location = new Location();
+	return $location->removeLocation($shopId);
 }
 
 

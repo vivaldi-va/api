@@ -152,6 +152,13 @@ class Location extends Bootstrap {
 		return $locationsArr;
 	}
 
+	/**
+	 * Add a location to the active locations list
+	 * which will then be used for price location and sorting
+	 * 
+	 * @param  int 		$shopId The row ID for the shop to add
+	 * @return array         	return model
+	 */
 	public function saveLocation($shopId) {
 		$userId	= User::getActiveUserId();
 
@@ -170,6 +177,25 @@ class Location extends Bootstrap {
 
 	}
 
+
+	public function removeLocation($shopId) {
+		$userId	= User::getActiveUserId();
+		$sql 	= "UPDATE locations SET active = 0 WHERE userid = $userId AND shopid = $shopId";
+
+		if(!$result = $this->_query($sql)) {
+			return $this->returnModel;
+		}
+
+		$this->returnModel['success'] = true;
+		return $this->returnModel;
+	}
+
+	/**
+	 * check whether the user has a particular location saved already
+	 * 
+	 * @param  int 		$shopId Shop row ID
+	 * @return array         	Return model
+	 */
 	private function _userHasLocation($shopId) {
 		$userId = User::getActiveUserId();
 		if(!$result = $this->_query("SELECT id FROM locations WHERE shopid = $shopId AND userid = $userId;")) {
