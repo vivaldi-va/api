@@ -103,7 +103,7 @@ class Location extends Bootstrap {
 		}
 
 		$this->returnModel['data']		= $resultArr;
-		$this->returnmodel['success']	= true;
+		$this->returnModel['success']	= true;
 		return $this->returnModel;
 	}
 
@@ -229,7 +229,6 @@ class Location extends Bootstrap {
 		$locationInfoStringURL = "http://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&sensor=false";
 
 		$locationInfo = json_decode(file_get_contents($locationInfoStringURL), true);
-		//print_r($locationInfo);
 		$address = $locationInfo['results'][0]['address_components'][1]['long_name']. ' ' . $locationInfo['results'][0]['address_components'][0]['long_name']. ', ' . $locationInfo['results'][0]['address_components'][2]['long_name'];
 
 		return $address;
