@@ -152,6 +152,37 @@ class Location extends Bootstrap {
 		return $locationsArr;
 	}
 
+	public function saveLocation($shopId) {
+		$userId	= User::getActiveUserId();
+
+		if($this->_userHasLocation($shopId)) {
+			$this->returnModel['success'] = true;
+			return $this->returnModel;
+		} else {
+			$sql = "INSERT INTO locations (id, userid, shopid, active) VALUES (null, $userId, $shopId, 1);";
+			if(!$result = $this->_query($sql)) {
+				return $this->returnModel;
+			}
+
+			$this->returnModel['success'] = true;
+			return $this->returnModel;
+		}
+
+	}
+
+	private function _userHasLocation($shopId) {
+		$userId = User::getActiveUserId();
+		if(!$result = $this->_query("SELECT id FROM locations WHERE shopid = $shopId AND userid = $userId;")) {
+			return false;
+		}
+
+		if($result->num_rows < 1) {
+			return false;
+		}
+
+		return true;
+	}
+
 }
 
 

@@ -41,6 +41,7 @@ getApi()->get('/search/(.+)', 										'apiSearch',				EpiApi::external);		// s
 
 getApi()->get('/location/(\d+\.\d+)/(\d+\.\d+)', 					'apiClosestLocations',		EpiApi::external);		// location/:latitude/:longitude
 getApi()->get('/location/saved',									'apiSavedLocations',		EpiApi::external);		
+getApi()->get('/location/add/(\d+)',								'apiAddLocation',			EpiApi::external);		// location/add/:shopId
 
 getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 
@@ -48,6 +49,10 @@ getApi()->get('/user/id', 'apiTestUserId', EpiApi::external);
 getRoute()->run();
 
 
+
+function _getPostData() {
+	return json_decode(file_get_contents('php://input'), true);
+}
 
 function apiRoot() {
 	return array("Congratulations, you've found the API for ostosnero");
@@ -159,6 +164,11 @@ function apiClosestLocations($latitude, $longitude, $num=20) {
 function apiSavedLocations() {
 	$location = new Location();
 	return $location->getSavedLocations();
+}
+
+function apiAddLocation($shopId) {
+	$location = new Location();
+	return $location->saveLocation($shopId);
 }
 
 
