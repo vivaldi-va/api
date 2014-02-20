@@ -60,6 +60,9 @@ The Ostosnero API
 
 #Product
 
+##Search for products
+*GET* /search/:term
+
 ##Get product info
 *GET* /product/:productId
 
@@ -70,3 +73,43 @@ The Ostosnero API
 *GET* /product/prices/update/:productId/:shopId/:price
 
 
+#List
+
+##Get user list
+*GET* /list
+
+##Add product to list
+*GET* /list/add/:productId
+
+##Remove product from list
+*GET* /list/remove/:listItemId
+
+##Update list quantity
+*GET* /list/quantity/:listItemId/:quantity
+
+##Sort the user's list
+*GET* /list/sort/:latitude/:longitude
+
+##Sort the user's list based on their chosen locations (no coords)
+*GET* /list/sort
+
+
+#Location
+
+##Get closest locations
+*GET* /location/:latitude/:longitude
+
+##Get location information
+*GET* /location/info/:latitude/:longitude
+
+##Search for locations
+*GET* /location/search/:keywords
+
+##Get saved locations
+*GET* /location/saved
+
+##Add location to saved list
+*GET* /location/add/:shopId
+
+##Remove location from saved list
+*GET* /location/remove/:shopId
