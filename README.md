@@ -14,7 +14,7 @@ The Ostosnero API
 ```
 
 * success: determines whether or not the API function has succeeded or not
-** if not, it will return false and should add an error string
+  * if not, it will return false and should add an error string
 * error: a string identifier relaying an error in the API function
 * message: additional information relating to the function if needed. Usually null.
 * data: the data returned from the function if relevant, otherwise it's null.
@@ -47,7 +47,26 @@ The Ostosnero API
 ##User login
 *POST* /user/login
 * params:
-** "email": user login email
-** "password": user login password
+  * "email": user login email 
+  * "password": user login password
 * returns: See user session (returns the same stuff)
+
+
+##User registration
+*POST* /user/register
+
+##User logout
+*GET* /user/logout
+
+#Product
+
+##Get product info
+*GET* /product/:productId
+
+##Get product prices
+*GET* /product/prices/:productId/:latitude/:longitude
+
+##Update product price at a location
+*GET* /product/prices/update/:productId/:shopId/:price
+
 
