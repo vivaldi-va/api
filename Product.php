@@ -117,10 +117,20 @@ class Product extends Bootstrap {
 			// get closest locations until you have 5 overall
 			$surroundingLocations = $locationClass->_getSurroundingStores($latitude, $longitude, 5);
 			$i = 0;
+
 			while(count($locationIdArr)<5) {
-				array_push($locationIdArr, $surroundingLocations[$i]['id']);
-				array_push($locationsArr, $surroundingLocations[$i]);
-				$i++;
+				$hasLocation = false;
+				foreach($locationIdArr as $location) {
+					if($surroundingLocations[$i]['id'] === $location) {
+						$hasLocation = true;
+					}
+				}
+
+				if(!$hasLocation) {
+					array_push($locationIdArr, $surroundingLocations[$i]['id']);
+					array_push($locationsArr, $surroundingLocations[$i]);
+					$i++;
+				}
 			}
 		}
 
