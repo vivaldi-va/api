@@ -158,7 +158,7 @@ function apiSearch($term, $limit = 50) {
 }
 
 
-function apiClosestLocations($latitude, $longitude, $num=20) {
+function apiClosestLocations($latitude, $longitude, $num=50) {
 
 	$location = new Location();
 	return $location->getSurroundingStores($latitude, $longitude, $num);
